@@ -1,0 +1,74 @@
+[tool.poetry]
+name = "bff_test_automation"
+version = "0.1.0"
+description = ""
+authors = ["Michael Naumann <mnaumann@plenty.ag>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pytest = "7.*"
+pytest-html = "3.*"
+requests = "^2.28.1"
+python-json-logger = "^2.0.4"
+cachetools = "^5.2.1"
+pytest-xdist = "3.*"
+black = "^23.1.0"
+inflection = "^0.5.1"
+deepdiff = "^6.2.3"
+certifi = "^2022.12.7"
+pytest-rerunfailures = "^11.0"
+ansi2html = "^1.8.0"
+setuptools = "^67.2.0"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+minversion = "7.1.2"
+addopts = "--junitxml=results/junit.xml --html=results/report.html --self-contained-html -n auto --reruns 2"
+testpaths = [
+    "tests",
+]
+markers = [
+    "isolate: isolate test(s) for selective execution",
+    "executive_service: marks tests as members of the 'executive-service' suite",
+    "farm_def_service: marks tests as members of the 'farm-def-service' suite",
+    "perception_object_service: marks tests as members of the 'perception-object-service' suite",
+    "product_quality_service: marks tests as members of the 'product-quality-service' suite",
+    "traceability_service: marks tests as members of the 'traceability-service' suite",
+    "user_store: marks tests as members of the 'userstore' suite",
+    "options: marks OPTIONS verb tests",
+    "head: marks HEAD verb tests",
+    "get: marks GET verb tests",
+    "post: marks POST verb tests",
+    "put: marks PUT verb tests",
+]
+render_collapsed = "True"
+
+[tool.black]
+line-length = 120
+target-version = ['py38']
+include = '\.pyi?$'
+exclude = '''
+# A regex preceded with ^/ will apply only to files and directories
+# in the root of the project.
+^/(
+  (
+      \.eggs         # exclude a few common directories in the
+    | \.git          # root of the project
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+  )/
+  | foo.py           # also separately exclude a file named foo.py in
+                     # the root of the project
+)
+'''
