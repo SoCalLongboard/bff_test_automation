@@ -76,3 +76,15 @@ def _log_required_envars():
         else:
             print(f"{envar:<{max_length}} : {environ[envar]}")
     print()
+
+
+@pytest.fixture
+def cleanup():
+    """Collects cleanup callbacks to run after the test, regardless of pass/fail."""
+    callbacks = []
+    yield callbacks.append
+    for callback in reversed(callbacks):
+        try:
+            callback()
+        except Exception as e:
+            print(f"Cleanup error (ignored): {e}")

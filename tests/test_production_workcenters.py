@@ -154,17 +154,17 @@ def test__production__workcenters__get_workcenter_by_name__get():
     print()
 
     # compare BFF and FDS workcenter expressions
-    assert fds_workcenter["name"] == fds_workcenter["name"]
-    print(f"Confirmed: {(fds_workcenter['name'] == fds_workcenter['name']) = }")
+    assert bff_workcenter["name"] == fds_workcenter["name"]
+    print(f"Confirmed: {(bff_workcenter['name'] == fds_workcenter['name']) = }")
 
-    assert fds_workcenter["displayName"] == fds_workcenter["displayName"]
-    print(f"Confirmed: {(fds_workcenter['displayName'] == fds_workcenter['displayName']) = }")
+    assert bff_workcenter["displayName"] == fds_workcenter["displayName"]
+    print(f"Confirmed: {(bff_workcenter['displayName'] == fds_workcenter['displayName']) = }")
 
     assert fds_workcenter["kind"] == "workCenter"
     print(f"Confirmed: {(fds_workcenter['kind'] == 'workCenter') = }")
 
-    assert fds_workcenter["path"] == fds_workcenter["path"]
-    print(f"Confirmed: {(fds_workcenter['path'] == fds_workcenter['path']) = }")
+    assert bff_workcenter["path"] == fds_workcenter["path"]
+    print(f"Confirmed: {(bff_workcenter['path'] == fds_workcenter['path']) = }")
 
 
 # Endpoint: /api/production/workcenters/create-task [OPTIONS, POST]

@@ -38,7 +38,7 @@ def test__devices__head():
 
 # @pytest.mark.isolate()
 @pytest.mark.get()
-def test_devices__get():
+def test_devices__get(cleanup):
     device_dict = get_device_dict()
 
     print("Generated device dictionary (used in requests):")
@@ -46,6 +46,7 @@ def test_devices__get():
     print()
 
     fds_device = farm_def_service_client().create_device(device_dict)
+    cleanup(lambda: clean_up_test_device(fds_device))
 
     print("FDS-generated device:")
     pprint(fds_device)
@@ -70,5 +71,3 @@ def test_devices__get():
     assert bff_device["deviceTypeName"] == device_type_name
     print(f"Confirmed: {(bff_device['deviceTypeName'] == device_type_name) = }")
     print()
-
-    clean_up_test_device(fds_device)

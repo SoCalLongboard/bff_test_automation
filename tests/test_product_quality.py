@@ -98,7 +98,7 @@ def test__product_quality__postharvest__head():
 
 # @pytest.mark.isolate()
 @pytest.mark.get()
-def test__product_quality__postharvest__get():
+def test__product_quality__postharvest__get(cleanup):
     # create the initial record
     postharvest_dict = generate_postharvest_dict(TEST_FARM)
 
@@ -113,6 +113,7 @@ def test__product_quality__postharvest__get():
     print()
 
     bff_postharvest_id = bff_postharvest_record["id"]
+    cleanup(lambda: cleanup_test_postharvest(bff_postharvest_id))
 
     # confirm the record is retrievable via the BFF endpoint
     pqs_payload = get_postharvest_query_string_payload(TEST_FARM)
@@ -140,12 +141,10 @@ def test__product_quality__postharvest__get():
         print(f"Confirmed: {(found_postharvest_record[key] == bff_postharvest_record[key]) = }  [{key}]")
     print()
 
-    cleanup_test_postharvest(bff_postharvest_id)
-
 
 # @pytest.mark.isolate()
 @pytest.mark.post()
-def test__product_quality__postharvest__post():
+def test__product_quality__postharvest__post(cleanup):
     # create the record via the BFF endpoint
     postharvest_dict = generate_postharvest_dict(TEST_FARM)
 
@@ -160,6 +159,7 @@ def test__product_quality__postharvest__post():
     print()
 
     bff_postharvest_id = bff_postharvest_record["id"]
+    cleanup(lambda: cleanup_test_postharvest(bff_postharvest_id))
 
     # confirm the record is retrievable via FQS
     pqs_postharvest_record = product_quality_service_client().get_postharvest_qa_by_id(bff_postharvest_id)
@@ -172,8 +172,6 @@ def test__product_quality__postharvest__post():
     assert bff_postharvest_record == pqs_postharvest_record
     print("Confirmed: BFF postharvest record == PQS postharvest record")
     print()
-
-    cleanup_test_postharvest(bff_postharvest_id)
 
 
 # Endpoint: /api/quality/postharvest/<postharvest_qa_id> [OPTIONS, HEAD, GET, PUT]
@@ -189,7 +187,7 @@ def test__product_quality__postharvest__postharvest_qa_id__options():
 
 # @pytest.mark.isolate()
 @pytest.mark.head()
-def test__product_quality__postharvest__postharvest_qa_id__head():
+def test__product_quality__postharvest__postharvest_qa_id__head(cleanup):
     postharvest_dict = generate_postharvest_dict(TEST_FARM)
 
     print("Postharvest dict:")
@@ -203,18 +201,17 @@ def test__product_quality__postharvest__postharvest_qa_id__head():
     print()
 
     bff_postharvest_id = bff_postharvest_record["id"]
+    cleanup(lambda: cleanup_test_postharvest(bff_postharvest_id))
 
     response = head(f"/api/quality/postharvest/{bff_postharvest_id}")
 
     pprint(response)
     print()
 
-    cleanup_test_postharvest(bff_postharvest_id)
-
 
 # @pytest.mark.isolate()
 @pytest.mark.get()
-def test__product_quality__postharvest__postharvest_qa_id__get():
+def test__product_quality__postharvest__postharvest_qa_id__get(cleanup):
     # create the initial record
     postharvest_dict = generate_postharvest_dict(TEST_FARM)
 
@@ -229,6 +226,7 @@ def test__product_quality__postharvest__postharvest_qa_id__get():
     print()
 
     bff_postharvest_id = bff_postharvest_record["id"]
+    cleanup(lambda: cleanup_test_postharvest(bff_postharvest_id))
 
     # confirm the record is retrievable by id via the BFF endpoint
     retrieved_postharvest_record = get_json(f"/api/quality/postharvest/{bff_postharvest_id}")
@@ -244,12 +242,10 @@ def test__product_quality__postharvest__postharvest_qa_id__get():
         print(f"Confirmed: {(retrieved_postharvest_record[key] == bff_postharvest_record[key]) = }  [{key}]")
     print()
 
-    cleanup_test_postharvest(bff_postharvest_id)
-
 
 # @pytest.mark.isolate()
 @pytest.mark.put()
-def test__product_quality__postharvest__postharvest_qa_id__put():
+def test__product_quality__postharvest__postharvest_qa_id__put(cleanup):
     # create the initial record
     # NOTE: the query string says "site" but this requires a *FARM* value!
     postharvest_dict = generate_postharvest_dict(TEST_FARM)
@@ -265,6 +261,7 @@ def test__product_quality__postharvest__postharvest_qa_id__put():
     print()
 
     bff_postharvest_id = bff_postharvest_record["id"]
+    cleanup(lambda: cleanup_test_postharvest(bff_postharvest_id))
 
     # generate a new note to render record change visible
     new_note = get_postharvest_notes()
@@ -286,8 +283,6 @@ def test__product_quality__postharvest__postharvest_qa_id__put():
     assert revised_postharvest_record["id"] == bff_postharvest_record["id"]
     print("Confirmed that this is a single, changed record")
     print()
-
-    cleanup_test_postharvest(bff_postharvest_id)
 
 
 # Endpoint: /api/quality/sensory/events [OPTIONS, HEAD, GET]
@@ -316,7 +311,7 @@ def test__product_quality__sensory__events__head():
 
 # @pytest.mark.isolate()
 @pytest.mark.get()
-def test__product_quality__sensory__events__get():
+def test__product_quality__sensory__events__get(cleanup):
     # create a sensory event via PQS
     sensory_event_dict = generate_sensory_event_dict(TEST_FARM)
 
@@ -331,6 +326,7 @@ def test__product_quality__sensory__events__get():
     print()
 
     pqs_sensory_event_id = pqs_sensory_event["id"]
+    cleanup(lambda: cleanup_test_sensory_event(pqs_sensory_event_id))
 
     # get sensory events for the farm & time interval intersection
     pqs_payload = get_postharvest_query_string_payload(TEST_FARM)
@@ -359,8 +355,6 @@ def test__product_quality__sensory__events__get():
         print(f"Confirmed: {(pqs_sensory_event[key] == bff_sensory_event[key]) = }  [{key}]")
     print()
 
-    cleanup_test_sensory_event(pqs_sensory_event_id)
-
 
 # Endpoint: /api/quality/sensory/events/<event_id>/ratings [OPTIONS, POST]
 # @pytest.mark.isolate()
@@ -375,7 +369,7 @@ def test__product_quality__sensory__events__event_id__ratings__options():
 
 # @pytest.mark.isolate()
 @pytest.mark.post()
-def test__product_quality__sensory__events__event_id__ratings__post():
+def test__product_quality__sensory__events__event_id__ratings__post(cleanup):
     # create a sensory event via PQS
     sensory_event_dict = generate_sensory_event_dict(TEST_FARM)
 
@@ -390,6 +384,8 @@ def test__product_quality__sensory__events__event_id__ratings__post():
     print()
 
     sensory_event_id = pqs_sensory_event["id"]
+    cleanup(lambda: cleanup_test_sensory_event(sensory_event_id))
+
     sensory_event_cultivar = pqs_sensory_event["cultivar"]
 
     sensory_rating_dict = generate_sensory_rating_dict(cultivar=sensory_event_cultivar)
@@ -406,6 +402,7 @@ def test__product_quality__sensory__events__event_id__ratings__post():
     print()
 
     sensory_rating_id = bff_sensory_rating["id"]
+    cleanup(lambda: cleanup_test_sensory_rating(sensory_rating_id))
 
     bff_flavor_notes = bff_sensory_rating["dodFlavorNotes"]
 
@@ -415,9 +412,6 @@ def test__product_quality__sensory__events__event_id__ratings__post():
         assert bff_flavor_notes[flavor_key]["userSelection"] == rating
         print(f"Confirmed rating match for {flavor}")
     print()
-
-    cleanup_test_sensory_event(sensory_event_id)
-    cleanup_test_sensory_rating(sensory_rating_id)
 
 
 # Endpoint: /api/quality/sensory/ratings [OPTIONS, HEAD, GET]
@@ -444,7 +438,7 @@ def test__product_quality__sensory__ratings__head():
 
 # @pytest.mark.isolate()
 @pytest.mark.get()
-def test__product_quality__sensory__ratings__get():
+def test__product_quality__sensory__ratings__get(cleanup):
     # create a sensory event via PQS
     sensory_event_dict = generate_sensory_event_dict(TEST_FARM)
 
@@ -459,6 +453,8 @@ def test__product_quality__sensory__ratings__get():
     print()
 
     sensory_event_id = pqs_sensory_event["id"]
+    cleanup(lambda: cleanup_test_sensory_event(sensory_event_id))
+
     sensory_event_cultivar = pqs_sensory_event["cultivar"]
 
     sensory_rating_dict = generate_sensory_rating_dict(cultivar=sensory_event_cultivar)
@@ -475,6 +471,7 @@ def test__product_quality__sensory__ratings__get():
     print()
 
     sensory_rating_id = bff_sensory_rating["id"]
+    cleanup(lambda: cleanup_test_sensory_rating(sensory_rating_id))
 
     # retrieve the sensory rating via BFF
     pqs_payload = get_postharvest_query_string_payload(TEST_FARM)
@@ -500,6 +497,3 @@ def test__product_quality__sensory__ratings__get():
         assert found_sensory_rating[key] == bff_sensory_rating[key]
         print(f"Confirmed: {(found_sensory_rating[key] == bff_sensory_rating[key]) = }  [{key}]")
     print()
-
-    cleanup_test_sensory_event(sensory_event_id)
-    cleanup_test_sensory_rating(sensory_rating_id)

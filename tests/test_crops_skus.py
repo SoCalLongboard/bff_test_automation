@@ -40,7 +40,7 @@ def test__crops_skus__crop__options():
 
 # @pytest.mark.isolate()
 @pytest.mark.post()
-def test__crops_skus__crop__post():
+def test__crops_skus__crop__post(cleanup):
     crop_dict = generate_crop_dict()
 
     print("Generated crop dictionary:")
@@ -50,6 +50,7 @@ def test__crops_skus__crop__post():
     crop_name = crop_dict["name"]
 
     bff_crop = post("/api/crops-skus/crop", crop_dict)
+    cleanup(lambda: clean_up_test_crop(crop_name))
 
     print("BFF-generated crop:")
     pprint(bff_crop)
@@ -60,9 +61,6 @@ def test__crops_skus__crop__post():
     print("FDS-retrieved crop:")
     pprint(fds_crop)
     print()
-
-    # clean up service objects before assertions
-    clean_up_test_crop(crop_name)
 
     # full object comparison
     assert bff_crop == fds_crop
@@ -77,7 +75,7 @@ def test__crops_skus__crop__post():
 # Endpoint: /api/crops-skus/crop/<crop-name> [OPTIONS, PUT]
 # @pytest.mark.isolate()
 @pytest.mark.options()
-def test__crops_skus__crop__crop_name__options():
+def test__crops_skus__crop__crop_name__options(cleanup):
     crop_dict = generate_crop_dict()
 
     print("Generated crop dictionary:")
@@ -86,6 +84,7 @@ def test__crops_skus__crop__crop_name__options():
 
     fds_crop = fds_create_crop(crop_dict)
     crop_name = fds_crop["name"]
+    cleanup(lambda: clean_up_test_crop(crop_name))
 
     print("FDS-generated crop:")
     pprint(fds_crop)
@@ -96,12 +95,10 @@ def test__crops_skus__crop__crop_name__options():
     print(f"verbs supported for '/api/crops-skus/crop/[crop-name]' : {verbs}")
     print()
 
-    clean_up_test_crop(crop_name)
-
 
 # @pytest.mark.isolate()
 @pytest.mark.put()
-def test__crops_skus__crop__crop_name__put():
+def test__crops_skus__crop__crop_name__put(cleanup):
     crop_dict = generate_crop_dict()
 
     print("Generated crop dictionary:")
@@ -111,6 +108,7 @@ def test__crops_skus__crop__crop_name__put():
     # generate the initial crop
     fds_crop = fds_create_crop(crop_dict)
     crop_name = fds_crop["name"]
+    cleanup(lambda: clean_up_test_crop(crop_name))
 
     # get initial value for switch/comparison
     is_seedable = fds_crop.get("isSeedable")
@@ -140,9 +138,6 @@ def test__crops_skus__crop__crop_name__put():
     pprint(fds_crop)
     print()
 
-    # clean up service objects before assertions
-    clean_up_test_crop(crop_name)
-
     assert fds_crop["isSeedable"] == bff_crop["isSeedable"]
     print(f"Confirmed: {(fds_crop['isSeedable'] == bff_crop['isSeedable']) = }")
     print()
@@ -167,7 +162,7 @@ def test__crops_skus__crops__head():
 
 # @pytest.mark.isolate()
 @pytest.mark.get()
-def test__crops_skus__crops__get():
+def test__crops_skus__crops__get(cleanup):
     crop_dict = generate_crop_dict()
 
     print("Generated crop dictionary:")
@@ -177,6 +172,7 @@ def test__crops_skus__crops__get():
     # generate an initial crop (to ensure at least one returned)
     fds_crop = fds_create_crop(crop_dict)
     crop_name = fds_crop["name"]
+    cleanup(lambda: clean_up_test_crop(crop_name))
 
     print("FDS-generated crop:")
     pprint(fds_crop)
@@ -195,9 +191,6 @@ def test__crops_skus__crops__get():
         if crop["name"] == crop_name:
             bff_crop = crop
             break
-
-    # clean up service objects before assertions
-    clean_up_test_crop(crop_name)
 
     assert bff_crop is not None
     print(f"Confirmed: crop {crop_name} is found among BFF-retrieved crops")
@@ -227,7 +220,7 @@ def test__crops_skus__sku__options():
 
 # @pytest.mark.isolate()
 @pytest.mark.post()
-def test__crops_skus__sku__post():
+def test__crops_skus__sku__post(cleanup):
     # first, create a crop via FDS
     crop_dict = generate_crop_dict()
 
@@ -241,6 +234,7 @@ def test__crops_skus__sku__post():
     print()
 
     crop_name = fds_crop.get("name")
+    cleanup(lambda: clean_up_test_crop(crop_name))
 
     # then create a sku via BFF
     sku_dict = generate_sku_dict(crop_name=crop_name)
@@ -249,13 +243,10 @@ def test__crops_skus__sku__post():
     print()
 
     bff_sku = post("/api/crops-skus/sku", sku_dict)
+    cleanup(lambda: clean_up_test_sku(bff_sku["name"]))
     print("BFF-generated sku:")
     pprint(bff_sku)
     print()
-
-    # clean up service objects before assertions
-    clean_up_test_crop(crop_name)
-    clean_up_test_sku(bff_sku["name"])
 
     # verify contents
     for key in sku_dict.keys():
@@ -267,7 +258,7 @@ def test__crops_skus__sku__post():
 # Endpoint: /api/crops-skus/sku/<sku-name> [OPTIONS, PUT]
 # @pytest.mark.isolate()
 @pytest.mark.options()
-def test__crops_skus__sku__sku_name__options():
+def test__crops_skus__sku__sku_name__options(cleanup):
     # first, create a crop via FDS
     crop_dict = generate_crop_dict()
 
@@ -281,6 +272,7 @@ def test__crops_skus__sku__sku_name__options():
     print()
 
     crop_name = fds_crop["name"]
+    cleanup(lambda: clean_up_test_crop(crop_name))
 
     # then create a sku via FDS
     sku_dict = generate_sku_dict(crop_name=crop_name)
@@ -289,6 +281,7 @@ def test__crops_skus__sku__sku_name__options():
     print()
 
     fds_sku = fds_create_sku(sku_dict)
+    cleanup(lambda: clean_up_test_sku(fds_sku["name"]))
     print("FDS-generated sku:")
     pprint(fds_sku)
     print()
@@ -299,13 +292,10 @@ def test__crops_skus__sku__sku_name__options():
     print(f"verbs supported for '/api/crops-skus/sku/[sku-name]' : {verbs}")
     print()
 
-    clean_up_test_crop(crop_name)
-    clean_up_test_sku(fds_sku["name"])
-
 
 # @pytest.mark.isolate()
 @pytest.mark.put()
-def test__crops_skus__sku__sku_name__put():
+def test__crops_skus__sku__sku_name__put(cleanup):
     # first, create a crop via FDS
     crop_dict = generate_crop_dict()
 
@@ -319,6 +309,7 @@ def test__crops_skus__sku__sku_name__put():
     print()
 
     crop_name = fds_crop["name"]
+    cleanup(lambda: clean_up_test_crop(crop_name))
 
     # then create a sku via BFF
     sku_dict = generate_sku_dict(crop_name=crop_name)
@@ -327,6 +318,7 @@ def test__crops_skus__sku__sku_name__put():
     print()
 
     fds_sku = fds_create_sku(sku_dict)
+    cleanup(lambda: clean_up_test_sku(fds_sku["name"]))
     print("FDS-generated sku:")
     pprint(fds_sku)
     print()
@@ -345,10 +337,6 @@ def test__crops_skus__sku__sku_name__put():
     print("BFF-modified sku:")
     pprint(bff_sku)
     print()
-
-    # clean up service objects before assertions
-    clean_up_test_crop(crop_name)
-    clean_up_test_sku(fds_sku["name"])
 
     # verify change
     assert bff_sku["gtin"] == sku_dict["gtin"]
@@ -375,7 +363,7 @@ def test__crops_skus__skus__head():
 
 # @pytest.mark.isolate()
 @pytest.mark.get()
-def test__crops_skus__skus__get():
+def test__crops_skus__skus__get(cleanup):
     # first, create a crop via FDS
     crop_dict = generate_crop_dict()
 
@@ -389,6 +377,7 @@ def test__crops_skus__skus__get():
     print()
 
     crop_name = fds_crop["name"]
+    cleanup(lambda: clean_up_test_crop(crop_name))
 
     # then create a sku via FDS
     sku_dict = generate_sku_dict(crop_name=crop_name)
@@ -397,6 +386,7 @@ def test__crops_skus__skus__get():
     print()
 
     fds_sku = fds_create_sku(sku_dict)
+    cleanup(lambda: clean_up_test_sku(fds_sku["name"]))
     print("FDS-generated sku:")
     pprint(fds_sku)
     print()
@@ -404,10 +394,6 @@ def test__crops_skus__skus__get():
     # get all available skus via BFF
     bff_skus = get_json("/api/crops-skus/skus")
     bff_skus_record_count = len(bff_skus)
-
-    # clean up service objects before assertions
-    clean_up_test_crop(crop_name)
-    clean_up_test_sku(fds_sku["name"])
 
     assert bff_skus_record_count > 0
     print("Confirmed: BFF GET request returned a positive number of records.")
